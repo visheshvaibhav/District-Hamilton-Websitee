@@ -1,0 +1,1415 @@
+📘 PART 1: PROJECT OVERVIEW
+
+Project Title:
+
+The District Tapas + Bar — Restaurant Ordering & Admin Management System
+
+⸻
+
+Description:
+
+The District Tapas + Bar is a modern, upscale restaurant offering a variety of tapas, handhelds, entrées, and handcrafted cocktails. This project involves building a fully functional, customizable web application that allows users to place pickup and delivery orders, view the menu dynamically, purchase and send gift cards, and perform tip-based payments for deliveries.
+
+The system will include both a customer-facing frontend and a powerful admin dashboard using FilamentPHP, allowing the restaurant staff to manage everything — from dishes and delivery zones to operational hours and gift card redemptions — without any hardcoding.
+
+This website will be built from scratch in Laravel 11 with modern best practices, designed to reflect the clean and attractive visual quality seen in premium Squarespace templates, while offering scalable backend functionality and customization options.
+
+⸻
+
+High-Level Goals:
+	•	Build a modular and maintainable restaurant website
+	•	Enable customers to easily browse the menu and order online (delivery/pickup)
+	•	Provide a gift card system (physical + e-card)
+	•	Support tipping for delivery drivers
+	•	Create a customizable admin panel (FilamentPHP-based)
+	•	Ensure delivery/pickup logic is smart and time-sensitive
+	•	Provide a guest checkout flow that doesn't require registration
+	•	Build in language localization support (English now, French in future)
+	•	Ensure clean, structured codebase optimized for Cursor AI development
+
+⸻
+
+Business Case:
+
+This platform eliminates the need for expensive subscription services like Squarespace or third-party ordering platforms by offering a custom-built solution tailored specifically to The District Tapas + Bar's menu structure, service flow, and branding needs.
+
+It is designed to be simple enough for staff to manage daily operations, yet powerful and extensible enough to support future features like loyalty rewards, pre-orders, or event bookings.
+
+⸻
+
+Platform Scope:
+
+Section	Description
+Frontend	Customer-facing menu, cart, checkout, tipping, gift cards
+Backend	Admin dashboard (FilamentPHP) with full control over menu, categories, dishes, zones, timings, gift cards
+Database	Relational structure (MySQL, normalized, based on ERD) with dynamic entities for menu, orders, tips, etc.
+Delivery/Pickup System	Real-time pickup timing (based on preparation logic), delivery radius, buffer time customization
+Gift Card System	Buy + send via email (e-card) or order a physical card, includes backend tracking and validation
+Deployment	GCP or AWS (EC2/VM) with SSL, Stripe integration, and potential CDN for performance
+
+
+⸻
+
+User Experience Vision:
+	•	Modern, visually appealing frontend (inspired by Squarespace)
+	•	Frictionless checkout for guests (no forced sign-up)
+	•	Admin-friendly panel mimicking the simplicity of WooCommerce or Shopify
+	•	Fast page loads, real-time feedback, smart defaults
+	•	Smooth mobile-first responsiveness for dine-in or on-the-go orders
+	•	Bilingual-ready architecture (English first, French later toggle)
+
+
+Perfect — here is Part 2: User Roles, written in a fully comprehensive format, suitable for Cursor or any developer reading the project scope.
+
+⸻
+
+📘 PART 2: USER ROLES
+
+This system will serve two types of users:
+
+⸻
+
+👤 1. Customer (Guest User)
+
+Definition:
+The end-user visiting the website to explore the menu, place an order, or purchase a gift card. No user account or login is required.
+
+🔓 Authentication:
+	•	No mandatory registration
+	•	Guest checkout only
+	•	Optional entry of:
+	•	Name
+	•	Email (for order confirmation or gift card delivery)
+	•	Phone number (optional)
+	•	Delivery address (only when "delivery" is selected)
+
+🛒 Capabilities:
+	•	Browse and filter menu categories (Tapas, Handhelds, Entrees, etc.)
+	•	View dish details, tags (e.g., GF, VEG), and pricing
+	•	Add items to cart
+	•	Customize dishes (if applicable: add-ons, sides, etc.)
+	•	Choose between Pickup or Delivery
+	•	Select preferred pickup time (calculated dynamically based on order content and admin-defined prep/buffer times)
+	•	Enter delivery address (delivery is allowed only within a configurable delivery radius)
+	•	Add a tip (for delivery orders only — percent-based)
+	•	Purchase gift cards:
+	•	Choose e-card or physical card
+	•	Enter recipient name, email
+	•	Add custom message (optional)
+	•	Receive order confirmation email and estimated timing
+
+📩 Notifications:
+	•	Order confirmation email (with ETA or pickup time)
+	•	Gift card email (for e-card option)
+	•	Optional delivery receipt (if integrated with Stripe)
+
+
+🧑‍💼 2. Admin (Restaurant Staff)
+
+Definition:
+Authorized staff managing the restaurant menu, orders, pickup/delivery settings, and gift cards. Admin interface is built using FilamentPHP.
+
+🔐 Authentication:
+	•	Username and password (FilamentPHP handles roles and access)
+	•	Admins can login securely to manage backend operations
+
+🛠 Admin Panel Capabilities:
+	•	Menu Management
+	•	Create/Edit/Delete categories (Tapas, Handhelds, etc.)
+	•	Create/Edit/Delete individual menu items
+	•	Assign category, price, description, tags (GF, VEG), prep time
+	•	Attach food image (stored in cloud or local storage)
+	•	Set item as pickup-only or delivery-available
+	•	Define optional add-ons for each dish (e.g., bacon, cheese)
+	•	Order Management
+	•	View incoming orders (status: pending, preparing, completed, canceled)
+	•	Update order status manually
+	•	View order details: items, modifiers, tip, total, delivery/pickup
+	•	Delivery Settings
+	•	Set delivery radius (in kilometers)
+	•	Define delivery fee (optional)
+	•	Set buffer time per order (used in pickup time logic)
+	•	Configure kitchen hours (used for availability)
+	•	Gift Card Management
+	•	View gift card purchases
+	•	Search by code, recipient, email
+	•	Mark gift cards as redeemed manually (for in-person use)
+	•	Admin Settings
+	•	Update contact info, hours, or global messages
+	•	(Optional: upload hero images, logo, or customize UI content)
+
+⸻
+
+👥 Summary of Roles
+
+Role	Auth Required?	Capabilities
+Customer (Guest)	❌	Browse menu, order (delivery/pickup), gift cards, tip
+Admin	✅	Full CRUD for menu, gift cards, orders, delivery/pickup settings
+
+
+⸻
+
+This setup ensures a smooth and accessible customer experience without registration barriers, while giving the restaurant full backend control via a clean and secure admin panel.
+
+Understood. Here's Part 3: Core Features — detailed, structured, and written as technical documentation for Cursor or any developer working on the system.
+
+⸻
+
+PART 3: CORE FEATURES
+
+This section outlines the core system functionality for the customer-facing website. These features are essential for enabling ordering, gift card handling, and customer interaction with the restaurant's offerings. All features are built for guest users and do not require registration or login.
+
+⸻
+
+3.1 Menu Browsing
+
+Features:
+	•	Dynamic menu structure based on categories (Tapas, Handhelds, Pastas, Entrees, etc.)
+	•	Each menu item will have:
+	•	Name
+	•	Price
+	•	Description
+	•	Optional dietary tags (GF, VEG, V, GFO, etc.)
+	•	Availability (pickup only / delivery enabled)
+	•	Optional image
+	•	Menu items grouped by category on the frontend
+	•	Certain categories (e.g., Cocktails, Beer) will not be available for delivery and may only be visible for browsing
+	•	Optional menu categories (e.g., Dessert of the day) can be set as dynamically updated or hidden until needed
+
+⸻
+
+3.2 Item Customization
+
+Certain menu items may support customizations:
+	•	Add-ons such as sides (e.g., fries, salad), sauces, or extras (e.g., cheese, bacon)
+	•	Admin will define available add-ons per menu item
+	•	Selected add-ons will be reflected in the order and pricing during checkout
+
+⸻
+
+3.3 Cart Functionality
+	•	Users can add and remove menu items from their cart
+	•	Quantity control per item
+	•	Add-ons are stored per item and appear as sub-items under each dish
+	•	Total cost is dynamically calculated
+	•	Cart is stored client-side during session (e.g., via localStorage)
+
+⸻
+
+3.4 Pickup and Delivery Option
+
+Upon checkout, users select either:
+	•	Pickup
+	•	User selects a preferred pickup time
+	•	System calculates earliest possible pickup time based on:
+	•	Sum of preparation times for selected dishes
+	•	Admin-defined kitchen buffer time (e.g., 15 minutes)
+	•	Admin-defined kitchen hours (respecting open/close window)
+	•	Delivery
+	•	User enters delivery address
+	•	System validates delivery eligibility based on:
+	•	Admin-defined delivery radius (e.g., 5 km)
+	•	Optional delivery fee
+	•	Same preparation + buffer time logic as pickup
+	•	Admin can later view and manage delivery orders from the dashboard
+
+⸻
+
+3.5 Tipping
+	•	Tipping is only available for delivery orders
+	•	Tip options are percentage-based, calculated on total order value
+	•	Configurable percentage presets (e.g., 10%, 15%, 20%)
+	•	Selected tip is added to final total during checkout
+	•	Tipping field is disabled if pickup is selected
+
+⸻
+
+3.6 Gift Card Purchase
+
+Users can purchase a gift card directly from the frontend.
+
+Gift Card Form Includes:
+	•	Amount selection (preset values or custom amount)
+	•	Type selection:
+	•	E-card (digital delivery to email)
+	•	Physical card (note: physical delivery must be handled offline/in-store)
+	•	Recipient name and email (for e-cards)
+	•	Optional personal message
+	•	Purchaser's name and email for confirmation
+
+After purchase:
+	•	Stripe payment is processed
+	•	E-card is emailed to the recipient with a unique code
+	•	Physical card purchase info is stored in admin dashboard for manual handling
+	•	Gift card codes are only redeemable in-person
+
+⸻
+
+3.7 Checkout Process
+	•	Seamless, guest-only checkout
+	•	Order Summary with:
+	•	Line items
+	•	Customizations/add-ons
+	•	Delivery fee (if applicable)
+	•	Tip (if selected)
+	•	Gift card application (future feature, if expanded)
+	•	Payment via Stripe
+	•	User receives email confirmation with order details and pickup/delivery timing
+	•	Admin dashboard displays the order in real-time with status set to "Pending"
+
+⸻
+
+3.8 Language Toggle
+	•	Primary language: English
+	•	System will be built with support for a second language (French)
+	•	Language toggle in the site header
+	•	Static content will use language files (Laravel localization system)
+	•	Menu item names and descriptions may initially remain in English, but content fields will be designed to allow multi-language support in the future
+
+Noted — I will now integrate that important requirement: gift card functionality should be fully implemented but toggleable from the admin panel. I'll reflect this explicitly in Part 4, and later we'll retroactively insert a note about it in the compiled .txt file for Part 3.
+
+⸻
+
+PART 4: ADMIN PANEL FEATURES (FilamentPHP)
+
+The admin panel is the operational backbone of the application and will be built using FilamentPHP. This panel is intended to replicate the flexibility of platforms like Squarespace or WooCommerce, allowing restaurant staff to manage all website functionality without writing any code.
+
+The admin dashboard will have modular sections, each designed to manage a core area of the business.
+
+⸻
+
+4.1 Dashboard Overview
+	•	Admin login via FilamentPHP's secure authentication
+	•	Welcome dashboard with key stats:
+	•	Today's orders
+	•	Upcoming pickups/deliveries
+	•	Gift cards purchased
+	•	Toggle for gift card system (enabled/disabled)
+
+⸻
+
+4.2 Menu Management
+
+Categories
+	•	Create/edit/delete categories (e.g., Tapas, Handhelds, Cocktails)
+	•	Toggle: available for delivery or pickup only
+	•	Sort order of categories for frontend display
+
+Menu Items
+	•	Create/edit/delete individual menu items
+	•	Assign item to a category
+	•	Set price
+	•	Set estimated preparation time (in minutes)
+	•	Upload image
+	•	Set tags (GF, VEG, V, etc.)
+	•	Set delivery availability (pickup-only or pickup+delivery)
+	•	Toggle: item is currently available/unavailable
+	•	Attach add-ons (with names and prices)
+	•	Optional field for seasonal/daily items (e.g., dessert board)
+
+⸻
+
+4.3 Add-Ons Manager
+	•	Define common add-ons (e.g., bacon, fries, sauces)
+	•	Assign to one or more menu items
+	•	Set additional cost per add-on
+
+⸻
+
+4.4 Order Management
+	•	View list of all orders (chronologically)
+	•	View order detail (items, add-ons, tip, amount, delivery or pickup, etc.)
+	•	Update order status:
+	•	Pending
+	•	Preparing
+	•	Ready
+	•	Completed
+	•	Canceled
+	•	View/filter by:
+	•	Date range
+	•	Status
+	•	Pickup vs Delivery
+
+⸻
+
+4.5 Delivery & Pickup Settings
+	•	Define delivery radius (in kilometers)
+	•	Set optional delivery fee
+	•	Set kitchen hours (start and end time)
+	•	Set buffer time to add to prep time (for total ETA logic)
+	•	Enable/disable delivery temporarily (e.g., during high volume)
+	•	Enable/disable pickup temporarily (e.g., if kitchen is closed early)
+
+⸻
+
+4.6 Tipping Settings
+	•	Enable/disable tipping globally
+	•	Set tip percentages (e.g., 10%, 15%, 20%) available to the user
+	•	Tip field appears only for delivery orders
+
+⸻
+
+4.7 Gift Card Management
+
+Note: Gift card feature should be fully implemented, but able to be turned on or off via a toggle in the admin panel.
+
+Admin Capabilities:
+	•	Enable or disable the gift card system
+	•	View all gift card purchases
+	•	Filter by type: e-card or physical
+	•	View recipient info and amount
+	•	Redeem gift card manually in store (mark as "redeemed")
+	•	Search by gift card code or email
+
+⸻
+
+4.8 Localization & Language
+	•	Define site-wide settings such as:
+	•	Primary language
+	•	Enable/disable French as a secondary language (toggle-based)
+	•	All content passed through Laravel's lang system
+	•	Optional upload fields for French equivalents of:
+	•	Category name
+	•	Menu item name/description
+	•	Gift card labels
+
+⸻
+
+4.9 Global Site Settings
+	•	Restaurant contact info (phone, email, address)
+	•	Google Maps integration toggle
+	•	Upload logo, header images, or hero sections
+	•	Optional message/alert bar (e.g., "Closed on Monday due to holiday")
+
+⸻
+
+4.10 Admin User Management
+	•	Manage admin users with roles (optional; default is single super-admin)
+	•	Secure password reset, 2FA support (optional via Filament plugin)
+
+⸻
+
+This admin panel will be styled cleanly using FilamentPHP's panel builder. Custom components may be built when required to extend functionality beyond native resources, such as the gift card system toggle, delivery zone mapping, or multi-language menu entry forms.
+
+Great — here is Part 5: Menu Management Design. This section focuses on the backend structure and frontend behavior of how menu items, categories, dietary tags, and add-ons are managed. It is deeply tied to the database schema (ERD) and FilamentPHP resource configuration.
+
+⸻
+
+PART 5: MENU MANAGEMENT DESIGN
+
+The menu is the heart of the application and must support full flexibility and real-time control from the admin panel without any code changes. Menu management must also support item-specific options, allergy and dietary tags, dynamic visibility, and delivery/pickup compatibility.
+
+⸻
+
+5.1 Categories
+
+Menu items are organized under categories. Categories will:
+	•	Be created and managed from the admin panel
+	•	Contain:
+	•	Category name (English, optionally French)
+	•	Delivery availability (is_deliverable: boolean)
+	•	Pickup-only restriction (if needed)
+	•	Sort order (for frontend display)
+	•	Visibility toggle (to hide/show entire category on frontend)
+
+Examples of categories:
+	•	Tapas
+	•	Handhelds
+	•	Entrees
+	•	Pastas
+	•	Desserts
+	•	Cocktails (Pickup only)
+	•	Wine & Beer (Pickup only)
+
+Categories will appear in the frontend menu as sections, and the system will ensure delivery-only orders exclude any pickup-only categories automatically.
+
+⸻
+
+5.2 Menu Items
+
+Each menu item will be stored as an independent entity, linked to a category.
+
+Fields:
+	•	Name (English, optionally French)
+	•	Description
+	•	Price
+	•	Category (foreign key)
+	•	Preparation time in minutes
+	•	Tags (GF, VEG, etc.) – multiple tags per item
+	•	Delivery availability (is_pickup_only: boolean)
+	•	Item availability (is_available: boolean)
+	•	Image path (stored locally or via cloud storage)
+	•	Sort order (for frontend display)
+	•	Visibility toggle
+
+Optional behaviors:
+	•	If an item is part of a changing board (e.g., desserts), it can be set as "hidden" until manually toggled on
+	•	If an item is temporarily unavailable, admin can toggle is_available to false
+
+⸻
+
+5.3 Dietary & Allergy Tags
+
+Each menu item can be linked to multiple dietary or allergy-related tags.
+
+Tags include:
+	•	GF (Gluten-Free)
+	•	GFO (Gluten-Free Option)
+	•	VEG (Vegetarian)
+	•	V (Vegan)
+	•	Contains Nuts
+	•	Contains Dairy
+	•	Spicy
+
+Tags will be stored in a separate table (menu_item_tags) and attached via a many-to-one relationship with menu items. This ensures scalability and translation if needed later.
+
+On the frontend, tags will appear as indicators next to item descriptions or names.
+
+⸻
+
+5.4 Add-Ons
+
+Some dishes allow optional modifications or add-ons (e.g., add bacon, change side to fries, add cheese).
+
+Structure:
+	•	Stored as individual entries in an add_ons table
+	•	Each add-on:
+	•	Has a name
+	•	Optional price (can be $0)
+	•	Can be linked to multiple menu items
+	•	Appears as a checkbox or dropdown in the cart/checkout view
+
+Add-ons will appear in the admin panel when editing a menu item. Admins can add new ones or link existing ones.
+
+⸻
+
+5.5 Menu Item Visibility and Control
+
+From the admin panel, the restaurant staff can:
+	•	Add new dishes quickly during seasonal changes
+	•	Hide/show dishes on the frontend without deleting them
+	•	Mark dishes as "Pickup Only" (e.g., alcohol)
+	•	Reorder categories and items using drag-and-drop or sort number fields
+	•	Add descriptions and tags in both English and French (future-proofing for bilingual support)
+
+⸻
+
+5.6 Frontend Behavior
+
+Frontend menu UI will:
+	•	Display menu grouped by category
+	•	Show item description, tags, price, and image
+	•	Highlight availability (e.g., "Pickup Only" or "Currently Unavailable")
+	•	Display add-on options in the cart/checkout only when relevant
+	•	Exclude any pickup-only categories from delivery orders
+	•	Automatically respect visibility toggles (hidden categories/items are never rendered)
+
+⸻
+
+This system ensures maximum flexibility for the restaurant, allowing them to change the live menu instantly based on kitchen capacity, ingredient availability, or promotional needs.
+
+Here is Part 6: Order Flow – Delivery & Pickup, fully detailed to guide both the backend logic and frontend behavior required for dynamic, accurate, and user-friendly order handling.
+
+⸻
+
+PART 6: ORDER FLOW – DELIVERY & PICKUP
+
+This section describes the full logic of how orders are placed, processed, and managed for both delivery and pickup options. The system will calculate estimated readiness times based on dish prep duration, delivery radius, kitchen buffer time, and other factors.
+
+⸻
+
+6.1 Order Type Selection
+
+At checkout, the customer must choose between:
+	•	Pickup
+	•	Delivery
+
+This selection dynamically updates the rest of the checkout form:
+	•	Pickup: No delivery address is required
+	•	Delivery: Address field becomes mandatory; system validates delivery eligibility
+
+⸻
+
+6.2 Pickup Order Flow
+
+User Flow:
+	1.	User selects "Pickup"
+	2.	System calculates estimated preparation time for selected dishes
+	3.	Admin-defined buffer time is added to ensure kitchen can prepare the order
+	4.	Customer is prompted to select a preferred pickup time, but the earliest time available is auto-suggested based on:
+	•	Dish preparation time sum
+	•	Buffer time
+	•	Current kitchen operating hours
+	5.	User selects a time within the kitchen hours and confirms order
+	6.	Email is sent with pickup details and selected time
+
+Admin-Defined Parameters:
+	•	Kitchen open and close time (e.g., 4:00 PM to 10:00 PM)
+	•	Buffer time in minutes (e.g., 15–20 mins)
+	•	Admin may override estimated times per dish if needed
+
+⸻
+
+6.3 Delivery Order Flow
+
+User Flow:
+	1.	User selects "Delivery"
+	2.	System asks for user address and validates:
+	•	Is within admin-defined delivery radius (e.g., 5 km from restaurant)
+	•	If not, the order cannot proceed and an error is shown
+	3.	System calculates delivery ETA:
+	•	Sum of dish prep times
+	•	Buffer time
+	•	(Optional: Estimated delivery travel time – static or calculated later)
+	4.	Admin-defined delivery fee (if any) is added to the order total
+	5.	Tip selection field appears (percent-based)
+	6.	Order is confirmed via Stripe payment
+	7.	Confirmation email includes delivery address and ETA
+
+Admin-Defined Parameters:
+	•	Delivery radius in kilometers
+	•	Delivery fee (flat rate or $0)
+	•	Buffer time (same as for pickup)
+	•	Toggle to disable delivery during peak hours or downtime
+
+⸻
+
+6.4 Order Data Stored
+
+All orders will store the following details in the database:
+	•	Order type (pickup/delivery)
+	•	Customer name, email, phone
+	•	Delivery address (nullable for pickup)
+	•	Selected dishes and quantities
+	•	Add-ons selected per item (stored in JSON or related table)
+	•	Tip amount
+	•	Delivery fee (if applicable)
+	•	Total amount charged
+	•	Estimated readiness time or ETA
+	•	Timestamp of order creation
+	•	Order status: Pending, Preparing, Ready, Completed, Canceled
+
+⸻
+
+6.5 Order Status Management (Admin)
+
+Admins will manage order lifecycles from their dashboard:
+	•	View list of all orders (latest first)
+	•	Filter by type (pickup/delivery) or status
+	•	View full order details including dishes, customizations, tip, and total
+	•	Update status manually through the following stages:
+	•	Pending (default)
+	•	Preparing
+	•	Ready for Pickup / Out for Delivery
+	•	Completed
+	•	Canceled
+
+Changing the status does not send automatic notifications unless email/SMS integration is added in a later phase.
+
+⸻
+
+6.6 Edge Cases
+	•	If a customer places a delivery order outside of delivery radius, they cannot proceed; a helpful message explains the restriction
+	•	If current time plus prep time exceeds kitchen close time, earliest available pickup time rolls over to next valid window (optional advanced logic)
+	•	If delivery is disabled from admin, the delivery option is hidden at checkout
+	•	If no menu items are marked as deliverable, only pickup option is available
+
+⸻
+
+This system ensures accurate readiness estimates, real-time order validation, and provides staff with operational clarity, while keeping the customer experience smooth and intuitive.
+
+Perfect — thanks for the clarification.
+
+You're absolutely right: it makes total sense to allow gift cards to be redeemed both in-store and online. This way, the system becomes much more flexible, and customers can use gift cards during checkout just like any other payment method.
+
+Let me now revise Part 7 to reflect this hybrid redemption model — both online and in-store.
+
+⸻
+
+PART 7: GIFT CARD SYSTEM 
+
+The gift card system allows customers to purchase digital or physical gift cards and redeem them either online or in-person at the restaurant. This functionality provides both convenience for customers and flexibility for staff.
+
+The system must be fully implemented, with a global toggle switch in the admin panel to enable or disable the entire gift card feature. When disabled, the gift card section is hidden from the frontend.
+
+⸻
+
+7.1 Gift Card Types
+	1.	E-Card (Digital)
+	•	Delivered via email to the recipient
+	•	Includes a unique, secure redemption code
+	•	Can be used during online checkout or in-store
+	2.	Physical Gift Card
+	•	Purchased through the website
+	•	Admin manually fulfills and delivers or provides to the customer
+	•	Code is printed or written on the card
+	•	Can also be used online during checkout or in-store
+
+⸻
+
+7.2 Gift Card Purchase Flow (Frontend)
+	1.	User fills out gift card form:
+	•	Amount
+	•	Delivery method (E-card or Physical)
+	•	Recipient name
+	•	Recipient email (if e-card)
+	•	Optional personal message
+	•	Purchaser info for confirmation
+	2.	User pays via Stripe
+	3.	Upon payment:
+	•	Gift card code is generated and saved in the database
+	•	E-cards are emailed to the recipient
+	•	Physical card info is stored for staff to fulfill
+	•	Confirmation sent to purchaser
+
+⸻
+
+7.3 Redemption Flow
+
+Online Redemption:
+	•	At checkout, customer enters the gift card code
+	•	System verifies:
+	•	If the code exists
+	•	If the card is unused
+	•	If valid:
+	•	Gift card amount is applied toward the order total
+	•	Remaining amount (if any) is paid via Stripe
+	•	Gift card is marked as "redeemed" after successful order
+	•	If invalid:
+	•	User sees an error (e.g., "Invalid or already used")
+
+In-Store Redemption:
+	•	Customer presents the gift card code
+	•	Staff logs into the admin panel, searches by code
+	•	Details shown: amount, recipient, type, status
+	•	Staff verifies and manually marks the card as redeemed after use
+
+⸻
+
+7.4 Admin Panel Features
+
+Admin panel section: Gift Cards
+
+Capabilities:
+	•	Enable/disable gift card system globally
+	•	View all gift card purchases
+	•	Filter by:
+	•	Delivery method
+	•	Redeemed or unredeemed
+	•	Search by:
+	•	Code, recipient, sender
+	•	Manually redeem a card (for in-store use)
+	•	Track which orders used gift cards (online redemptions)
+	•	Optional: View remaining balances (if supporting partial redemptions later)
+
+⸻
+
+7.5 Code & Balance Logic
+	•	Each card has a unique code (DISTRICT-8F9L2M)
+	•	Stored in gift_cards table with:
+	•	Code
+	•	Amount
+	•	Status: redeemed or unredeemed
+	•	Linked order ID (if redeemed online)
+	•	Only one-time full redemption is supported initially
+	•	Partial use / balance tracking can be added in a future version
+
+⸻
+
+7.6 Checkout Integration
+
+During online checkout:
+	•	Input field for gift card code
+	•	If applied:
+	•	Gift card amount is deducted from total
+	•	Tip and delivery fees still calculated on full order
+	•	If balance covers total: Stripe is bypassed
+	•	If not: remaining balance is paid via Stripe
+
+⸻
+
+7.7 Email Notifications
+	1.	Gift Card Email to Recipient
+	•	Includes code, value, sender name, and instructions for both online and in-store use
+	2.	Confirmation to Purchaser
+	•	Includes purchase summary and status of delivery (e-card sent / physical card pending)
+
+⸻
+
+7.8 Technical Summary
+	•	Gift cards stored in their own table
+	•	Code lookup logic used in:
+	•	Checkout controller (online redemption)
+	•	Admin panel (in-store lookup)
+	•	Stripe used only for initial purchase
+	•	No integration with external POS systems required
+
+⸻
+
+This hybrid model offers maximum flexibility while keeping implementation clean. Customers can gift, receive, and redeem cards across channels, and staff can manage redemptions securely through the admin dashboard.
+
+⸻
+
+PART 8: TIPPING SYSTEM
+
+The tipping system enables customers to leave a gratuity during delivery orders as a percentage of their total bill. This feature is visible only for eligible orders and must be fully configurable from the admin panel.
+
+Tipping is designed to be simple for users, configurable for admins, and clearly accounted for in orders and Stripe transactions.
+
+⸻
+
+8.1 Tipping Availability Rules
+	•	Tipping is available only for delivery orders
+	•	Pickup orders do not show the tipping interface
+	•	If the order type is switched from delivery to pickup at checkout, the tipping field is dynamically hidden
+	•	Tipping applies to:
+	•	Order subtotal
+	•	Add-ons (included in subtotal)
+	•	Excludes gift card value if redeemed
+
+⸻
+
+8.2 Tip Selection UI (Frontend)
+
+Customers will see a tipping section at checkout when delivery is selected.
+
+Features:
+	•	Preset percentage options, e.g.:
+	•	10%, 15%, 20%
+	•	Only one value can be selected
+	•	Tip is calculated and displayed immediately in the order summary
+	•	Total updates in real-time to include the selected tip
+	•	If user deselects tipping or resets form, tip value returns to 0
+
+⸻
+
+8.3 Admin Panel – Tipping Configuration
+
+Admin panel section: Tipping Settings
+
+Capabilities:
+	•	Enable or disable tipping globally
+	•	When disabled, tipping UI is removed from checkout entirely
+	•	Configure available percentages (e.g., [10, 15, 20])
+	•	Stored as an array or collection
+	•	At least one option is required
+	•	Optional toggle: allow no-tip option (admin can require or allow skipping tips)
+
+⸻
+
+8.4 Backend Logic and Storage
+
+When an order is placed:
+	•	The selected tip percentage and the calculated amount are saved with the order
+	•	Tip amount is included in the total Stripe charge
+	•	Stored fields:
+	•	tip_percentage (nullable)
+	•	tip_amount (decimal)
+	•	is_tip_applied (boolean)
+
+The tip is treated as non-refundable, and will show up in admin order views and Stripe transaction history.
+
+⸻
+
+8.5 Stripe Integration Notes
+	•	The tip is included in the final charge to Stripe along with:
+	•	Subtotal
+	•	Delivery fee (if any)
+	•	Taxes (if applicable)
+	•	No separate tipping line is required in Stripe unless needed for reporting
+
+⸻
+
+8.6 Admin Order View
+
+Admins viewing an order in the dashboard will see:
+	•	Total order amount
+	•	Tip amount (with percentage used)
+	•	Tip appears as a distinct field in the order detail view
+	•	Tip is included in the order summary export or reporting (if enabled)
+
+⸻
+
+8.7 Technical Notes
+	•	Tipping logic is applied only at the time of checkout
+	•	The tipping interface is driven via frontend logic based on order type
+	•	Admin tipping configuration is stored in a global settings table or JSON config
+	•	Validation ensures only permitted tip values are accepted during form submission
+
+⸻
+
+This tipping system encourages additional revenue for delivery personnel while giving customers a seamless, optional way to support staff. Admins retain full control over whether and how tipping is used.
+
+⸻
+
+Here is Part 9: Checkout & Authentication Logic, which defines the entire customer-facing checkout process, how orders are submitted, how user data is handled, and the system's authentication policy — with emphasis on guest checkout.
+
+⸻
+
+PART 9: CHECKOUT & AUTHENTICATION LOGIC
+
+This section outlines the structure and behavior of the checkout experience on the frontend, and the authentication policy governing how customer data is handled.
+
+The checkout flow is designed to be fast, frictionless, and guest-only, ensuring users can place orders or buy gift cards without creating an account.
+
+⸻
+
+9.1 Authentication Policy
+	•	This platform follows a guest-first approach
+	•	There is no user registration or login system at launch
+	•	All orders are associated with:
+	•	Customer name
+	•	Email
+	•	Phone number (optional)
+	•	Delivery address (for delivery orders)
+	•	Data is stored only for that order session, not linked to a persistent customer account
+
+Benefits of guest-only model:
+	•	Faster order flow
+	•	No password fatigue or login friction
+	•	Easy for one-time users or gift card buyers
+	•	Cleaner and simpler database
+
+Note:
+If needed later, user authentication can be added modularly (e.g., for order history or loyalty programs), but it is intentionally excluded for now to keep the system simple and optimized.
+
+⸻
+
+9.2 Checkout Form – Structure & Fields
+
+Checkout form adjusts dynamically based on the selected order type (pickup or delivery).
+
+Common Fields:
+	•	Name (required)
+	•	Email (required)
+	•	Phone number (optional)
+	•	Notes to kitchen (optional)
+
+For Pickup Orders:
+	•	Pickup time selection (auto-suggested earliest time)
+	•	Notes (e.g., "Please pack extra napkins")
+
+For Delivery Orders:
+	•	Delivery address:
+	•	Street address
+	•	Postal code
+	•	City
+	•	Delivery eligibility validation (based on delivery radius)
+	•	Tip selection (percentage)
+	•	Optional delivery instructions
+
+If a gift card is applied:
+	•	Gift card code field
+	•	Validation on submission
+	•	Partial payment fallback to Stripe (if card does not cover full amount)
+
+⸻
+
+9.3 Real-Time Validations
+	•	Mandatory fields are enforced with inline validation
+	•	Delivery address must fall within configured delivery zone
+	•	Gift card code must:
+	•	Exist in the database
+	•	Not be redeemed
+	•	Cover total or partial payment
+
+⸻
+
+9.4 Order Review & Confirmation
+
+Before finalizing, user sees:
+	•	Cart summary with itemized costs
+	•	Add-ons and extras listed per item
+	•	Delivery fee (if applicable)
+	•	Tip amount (if selected)
+	•	Gift card applied (if any)
+	•	Total cost breakdown
+	•	Confirm button leads to payment via Stripe
+
+⸻
+
+9.5 Payment Gateway Integration (Stripe)
+	•	Stripe is used for all payments
+	•	Payment request includes:
+	•	Order total (after tip and delivery fee)
+	•	Deducted gift card amount (if applicable)
+	•	Only successful payments create a valid order entry
+
+⸻
+
+9.6 Post-Checkout Flow
+	•	User is redirected to an Order Confirmation page showing:
+	•	Order ID
+	•	Pickup time or delivery ETA
+	•	Summary of items, tip, and total
+	•	Confirmation email is sent to the customer
+	•	Admin receives new order in dashboard with "Pending" status
+
+⸻
+
+9.7 Gift Card Checkout Differences
+
+The checkout flow for purchasing a gift card differs from a food order:
+	•	No delivery or pickup selection
+	•	No cart or item list
+	•	Form includes:
+	•	Recipient name/email
+	•	Sender name/email
+	•	Amount
+	•	Message
+	•	After payment, the gift card is issued and stored
+
+⸻
+
+9.8 Data Handling & Privacy
+	•	Customer details are stored per order only
+	•	No long-term customer profiles are created
+	•	Admins can view order records in dashboard
+	•	Optional: Export order records to CSV for marketing or analytics (future)
+
+⸻
+
+This structure ensures a fast and seamless checkout experience for all users, while maintaining secure order handling and a low-friction purchasing journey.
+
+⸻
+
+PART 10: LOCALIZATION & BILINGUAL SUPPORT
+
+The restaurant operates in Ontario, Canada, where English is the primary language, but French-language support is desirable for accessibility and customer reach. This system will be built using Laravel's native localization features, with bilingual readiness from the outset.
+
+French will be added as a second language option accessible through a language toggle on the frontend.
+
+⸻
+
+10.1 Supported Languages
+	•	Primary Language: English
+	•	Secondary Language (Optional Toggle): French
+
+Customers can switch between the two using a language toggle prominently placed in the website header (e.g., dropdown or icon).
+
+⸻
+
+10.2 Localization System
+
+Laravel's native localization functionality (lang folder with language JSON or array files) will be used for:
+	•	Static frontend content (headings, buttons, labels, instructions)
+	•	Checkout steps, form fields, confirmation messages
+	•	Email content templates (order confirmation, gift cards)
+
+All strings will be wrapped in the __() helper or @lang directive for translation readiness.
+
+⸻
+
+10.3 Database-Driven Fields and Translations
+
+Some content is stored in the database, such as:
+	•	Menu category names
+	•	Menu item names and descriptions
+	•	Add-on names
+	•	Tag names (GF, VEG, etc.)
+
+For these, a dual-language field strategy will be used:
+
+Field	Language
+name_en	English
+name_fr	French
+description_en	English
+description_fr	French
+
+Admin panel forms will allow input for both languages. If the French field is left blank, the system will default to English.
+
+⸻
+
+10.4 Admin Panel Localization
+	•	Admin interface will remain in English only
+	•	Admins can enter bilingual content via dedicated fields
+	•	Language toggle will not affect backend views or FilamentPHP panel
+
+⸻
+
+10.5 Language Toggle Behavior
+	•	Toggle is available globally at the top of all frontend pages
+	•	Once selected, the site persists the language choice using:
+	•	Session or cookie (for temporary visit)
+	•	Fallback to browser language preference
+	•	All page content, labels, and static text will immediately reflect the chosen language
+	•	Dynamic content (menu, cart, checkout) will render using *_en or *_fr fields
+
+⸻
+
+10.6 Translation Workflow
+
+For launch:
+	•	Static English strings will be fully implemented
+	•	French translations will be optionally added where available
+	•	Untranslated dynamic fields will fallback to English until populated
+
+Admin training or documentation may be created to guide staff in managing translations within the FilamentPHP dashboard.
+
+⸻
+
+10.7 Future Enhancements (Optional)
+	•	Use of third-party services (e.g., Weglot or DeepL) for automated translations
+	•	Expansion to additional languages
+	•	Locale-based routing (/en, /fr URL prefixing)
+	•	Language-specific SEO metadata
+
+⸻
+
+This localization strategy ensures that bilingual requirements are met in a scalable, maintainable, and user-friendly way, without increasing frontend complexity or development burden.
+
+
+⸻
+
+PART 11: TECHNOLOGY STACK & TOOLS
+
+This section outlines the full technology ecosystem that powers the web application. The stack has been selected for scalability, developer friendliness, integration flexibility, and AI-assisted development via platforms like Cursor.
+
+⸻
+
+11.1 Core Framework
+
+Layer	Technology
+Backend Framework	Laravel 11 (PHP 8.2+)
+Frontend Rendering	Blade templates (with Tailwind CSS)
+Admin Panel	FilamentPHP
+Database	MySQL (with support for future PostgreSQL migration)
+Payment Processing	Stripe
+Mail Delivery	Laravel Mail (SMTP, Mailgun, or SES)
+Localization	Laravel lang files with dual-language content fields
+QR/Barcode (optional)	milon/barcode or simple-qrcode (for future physical card scanning)
+
+
+⸻
+
+11.2 Frontend UI/UX Stack
+
+Tool	Purpose
+Tailwind CSS	Utility-first styling for both frontend and admin
+Alpine.js (optional)	For minimal frontend interactivity
+Livewire (optional)	Reactive UI components within Laravel if needed
+JavaScript (vanilla)	Light scripting for form behaviors, toggles, etc.
+Language Toggle	JS + session/cookie logic for language preference
+
+
+⸻
+
+11.3 Admin Panel (FilamentPHP)
+
+FilamentPHP will manage:
+	•	Menu item CRUD
+	•	Categories and tags
+	•	Add-ons
+	•	Gift card records
+	•	Orders and tipping
+	•	Delivery & pickup settings
+	•	Global settings (logo, hours, notices)
+
+Why FilamentPHP:
+	•	Beautiful UI out of the box
+	•	Easily extendable with custom forms, pages, widgets
+	•	Well-integrated with Laravel's service container and policies
+
+⸻
+
+11.4 Payment Gateway
+
+Service	Purpose
+Stripe	For all customer payments including food orders and gift cards
+
+Stripe integration includes:
+	•	One-time charges
+	•	Coupon/gift card deductions
+	•	Order metadata attached to transaction
+	•	Stripe webhook support (for confirmation/failure)
+
+⸻
+
+11.5 Deployment & Hosting
+
+Component	Details
+Cloud Provider	Google Cloud Platform (GCP) or AWS
+Server Type	VM or EC2 instance
+Web Server	Nginx (with PHP-FPM)
+SSL	Free SSL (e.g., Let's Encrypt or GCP/AWS-managed certs)
+Storage	Local disk or S3/GCS for images
+Domain	Custom domain setup with DNS configuration
+CDN (optional)	Cloudflare (for caching, security, and performance boost)
+
+
+
+⸻
+
+This stack is designed to be lean yet powerful, minimizing dependencies while offering robust control, speed, and room to scale as the restaurant's needs grow.
+
+⸻
+
+Here is Part 12: Deployment Preferences & Operational Setup, which outlines how the application will be deployed, what infrastructure decisions have been made, and how the environment will be configured to support performance, scalability, and maintainability.
+
+⸻
+
+PART 12: DEPLOYMENT PREFERENCES & OPERATIONAL SETUP
+⸻
+
+
+12.8 Performance Considerations
+	•	Laravel's built-in caching (config, routes, views) enabled in production
+	•	php artisan optimize run post-deployment
+	•	Optional use of Redis for queue and session caching (if needed)
+	•	Database indexes will be added for frequent query fields (e.g., gift card codes, order timestamps)
+
+⸻
+
+12.9 Monitoring & Maintenance
+
+Recommended:
+	•	Enable basic uptime monitoring (e.g., UptimeRobot or GCP Ops Suite)
+	•	Log rotation setup via Laravel and system cron
+	•	Laravel Debugbar disabled in production
+	•	Firewall/security rules to restrict SSH and DB access
+	•	Optional: admin audit log inside Filament panel
+
+⸻
+
+This deployment strategy ensures the site remains fast, secure, and easy to maintain, while leaving room for advanced features like CDN, containerization, or serverless upgrades in the future.
+
+
+⸻
+
+PART 13: DATABASE DESIGN SUMMARY (ERD)
+
+The database schema has been carefully designed to support a modular restaurant application with customizable menu items, order handling, gift card logic, delivery/pickup features, and tipping.
+
+Each entity corresponds to a relational table in MySQL, with defined relationships, foreign keys, and appropriate indexing. FilamentPHP will use these tables to create dynamic admin resources.
+
+⸻
+
+13.1 Core Tables & Relationships
+
+⸻
+
+categories
+
+Field	Type	Notes
+id	bigint	Primary key
+name_en	string	English category name
+name_fr	string	French category name
+is_deliverable	boolean	Whether this category supports delivery
+sort_order	integer	For frontend display
+is_visible	boolean	Show/hide on site
+
+Relationships:
+	•	One category has many menu_items
+
+⸻
+
+menu_items
+
+Field	Type	Notes
+id	bigint	Primary key
+category_id	foreignId	Belongs to categories
+name_en	string	English name
+name_fr	string	French name
+description_en	text	English description
+description_fr	text	French description
+price	decimal	Base price
+preparation_time_minutes	integer	Used for pickup time logic
+is_pickup_only	boolean	If true, not shown in delivery flow
+is_available	boolean	Controls live visibility
+image_path	string	Stored image filename/path
+sort_order	integer	Custom sort value
+
+
+⸻
+
+menu_item_tags
+
+Field	Type	Notes
+id	bigint	Primary key
+menu_item_id	foreignId	Belongs to menu_items
+tag_name	string	e.g., "GF", "VEG", "Spicy"
+
+Relationships:
+	•	Many tags belong to one menu item
+
+⸻
+
+add_ons
+
+Field	Type	Notes
+id	bigint	Primary key
+menu_item_id	foreignId	Belongs to menu_items
+name_en	string	English add-on name
+name_fr	string	French add-on name
+price	decimal	Additional cost
+
+Relationships:
+	•	Many add-ons belong to one menu item
+
+⸻
+
+orders
+
+Field	Type	Notes
+id	bigint	Primary key
+customer_name	string	Required
+customer_email	string	Required
+customer_phone	string	Optional
+order_type	enum	"pickup" or "delivery"
+delivery_address	text	Nullable if pickup
+tip_percentage	integer	Optional (e.g., 15)
+tip_amount	decimal	Optional
+delivery_fee	decimal	Optional
+gift_card_code_used	string	Nullable
+total_amount	decimal	Final amount charged
+status	enum	"pending", "preparing", "ready", "completed", "canceled"
+pickup_time	datetime	Nullable
+created_at	timestamp	Auto-handled
+
+
+⸻
+
+order_items
+
+Field	Type	Notes
+id	bigint	Primary key
+order_id	foreignId	Belongs to orders
+menu_item_id	foreignId	Refers to menu_items
+quantity	integer	How many of this item
+selected_add_ons	json	List of selected add-on names or IDs
+subtotal	decimal	Item subtotal with add-ons
+
+Relationships:
+	•	One order has many order_items
+
+⸻
+
+gift_cards
+
+Field	Type	Notes
+id	bigint	Primary key
+code	string	Unique alphanumeric string
+amount	decimal	Total gift card value
+recipient_name	string	Shown on email/record
+recipient_email	string	For e-cards
+sender_name	string	Shown in email
+sender_email	string	For confirmation receipt
+message	text	Optional
+delivery_type	enum	"ecard" or "physical"
+is_redeemed	boolean	True if used (online or in store)
+redeemed_at	datetime	Optional
+order_id	foreignId	Nullable — linked if used online
+created_at	timestamp	Purchase time
+
+
+⸻
+
+delivery_settings
+
+Field	Type	Notes
+id	int	Singleton (1 row)
+delivery_radius_km	integer	Max delivery distance
+delivery_fee	decimal	Flat fee
+kitchen_open_time	time	e.g., 16:00
+kitchen_close_time	time	e.g., 22:00
+buffer_time_minutes	integer	Time added to prep estimate
+delivery_enabled	boolean	Toggle from admin
+pickup_enabled	boolean	Toggle from admin
+
+
+⸻
+
+tipping_settings
+
+Field	Type	Notes
+id	int	Singleton
+tipping_enabled	boolean	Global toggle
+tip_percentages	json	[10, 15, 20] or similar
+
+
+⸻
+
+admins
+
+| Managed by FilamentPHP | Uses Laravel's built-in user model & auth features for admin access. |
+
+⸻
+
+This schema supports all planned frontend/backend features and allows easy extension for loyalty systems, partial gift card redemptions, or recurring customers in the future.
+
+⸻
+
+This concludes the technical documentation for the platform.
+⸻
+
+📋 PROJECT CHECKPOINT: IMPLEMENTATION PROGRESS
+
+As of May 7, 2023, we have completed the following:
+
+📋 PROJECT CHECKPOINT: IMPLEMENTATION PROGRESS
+
+As of May 14, 2023, we have completed the following:
+
+✅ Database Schema Design & Implementation:
+- All migration files created with proper fields and relationships
+- Categories, Menu Items, Tags, Add-ons, Orders, Gift Cards, Settings tables
+
+✅ Model Creation & Relationships:
+- All models defined with proper fillable attributes
+- Relationships established between models
+- Type casting implemented 
+
+✅ Base Project Structure:
+- Laravel 11 framework installed
+- FilamentPHP admin panel installed and configured
+- Stripe PHP SDK integrated
+- TailwindCSS configured
+- Project directory structure established
+
+✅ Admin Panel Implementation (Complete):
+- All FilamentPHP resources fully implemented with:
+  - Custom forms with proper fields and validation
+  - Resource tables with sorting, filtering, and search
+  - Relationship managers for related entities
+- Menu Category and Menu Item management with tags and add-ons
+- Order management with detailed item views and receipt generation
+- Gift Card system with creation and redemption functionality
+- Delivery & Pickup settings with time and radius configuration
+- System Settings page with toggles for gift cards and tipping
+
+⏭ NEXT STEPS:
+
+1. Develop frontend customer interface:
+   - Create menu browsing page with category filtering
+   - Implement cart functionality with add-ons selection
+   - Build checkout flow with pickup/delivery validation
+   - Design gift card purchase interface
+   - Create order confirmation and status pages
+
+2. Implement core order processing logic:
+   - Delivery radius validation using address
+   - Pickup/delivery time calculations
+   - Gift card application and redemption flow
+   - Tip calculation for delivery orders
+
+3. Integrate payment processing:
+   - Configure Stripe for one-time payments
+   - Implement gift card redemption logic
+   - Handle partial payments with gift cards
+
+4. Add language localization:
+   - Implement language toggle
+   - Create translation files for English/French
+
+5. Design and responsive UI:
+   - Build mobile-friendly layout
+   - Ensure accessibility compliance
+   - Create consistent branding across all pages
+
+6. Testing and deployment:
+   - Conduct end-to-end testing of order flow
+   - Verify delivery radius calculations
+   - Test gift card redemption
+   - Configure production environment
+
+This checkpoint will guide the next development session as we shift focus to building the customer-facing frontend components. 
