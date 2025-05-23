@@ -36,12 +36,27 @@
     </section>
     
     <!-- Reservation Widget Section -->
-    <section id="reservation-widget" class="py-16 bg-gray-50">
-        <div class="container mx-auto px-4">
-            <div class="max-w-4xl mx-auto text-center">
+    <section id="reservation-widget" class="py-16 bg-gray-50" style="overflow: visible; padding-bottom: 150px;">
+        <div class="container mx-auto px-4" style="overflow: visible;">
+            <div class="max-w-4xl mx-auto text-center" style="overflow: visible;">
                 <h2 class="section-title mx-auto mb-8">Make a Reservation</h2>
-                <div class="reservation-widget-container flex justify-center">
-                    <script type='text/javascript' src='//www.opentable.ca/widget/reservation/loader?rid=1431862&type=standard&theme=standard&color=1&dark=false&iframe=true&domain=ca&lang=en-CA&newtab=false&ot_source=Restaurant%20website&cfe=true'></script>
+                <div class="reservation-widget-container flex justify-center" style="overflow: visible;">
+                    <script type='text/javascript' src='https://www.opentable.ca/widget/reservation/loader?rid=1431862&type=standard&theme=standard&color=1&dark=false&iframe=true&domain=ca&lang=en-CA&newtab=true&ot_source=Restaurant%20website&cfe=true'></script>
+                    <style>
+                        .reservation-widget-container iframe {
+                            display: block;
+                            height: 300px !important;
+                            width: 100% !important;
+                            overflow: visible !important;
+                            border: none !important;
+                        }
+
+                        #reservation-widget,
+                        #reservation-widget .container,
+                        #reservation-widget .max-w-4xl {
+                            overflow: visible !important;
+                        }
+                    </style>
                 </div>
             </div>
         </div>
@@ -159,7 +174,7 @@
                             <i class="fas fa-star"></i>
                         </span>
                     </div>
-                    <p class="text-gray-700 mb-6 italic">"WOW WOW. First off the food was amazing, service amazing. We were out of bagettes and someone from the kitchen noticed and brought us more. We didn’t even have to ask. As soon as you’re done with dishes they come and clear your table. Very friendly service, atmosphere is very relaxing. Cannot wait to have an excuse to go back to Hamilton just to eat here again!
+                    <p class="text-gray-700 mb-6 italic">"WOW WOW. First off the food was amazing, service amazing. We were out of bagettes and someone from the kitchen noticed and brought us more. We didnt even have to ask. As soon as youre done with dishes they come and clear your table. Very friendly service, atmosphere is very relaxing. Cannot wait to have an excuse to go back to Hamilton just to eat here again!
 Would highly recommend to everyone!"</p>
                     <div class="font-bold text-gray-900">— Crystal H.</div>
                     <div class="text-sm text-gray-500">London, ON</div>
@@ -215,9 +230,9 @@ Would highly recommend to everyone!"</p>
     <section class="py-16 bg-dark text-white">
         <div class="container mx-auto px-4 text-center">
             <h2 class="text-3xl md:text-4xl font-display font-bold mb-6">Ready to Experience Our Tapas?</h2>
-            <p class="text-xl mb-8 max-w-3xl mx-auto">Whether you're dining in, taking out, or having it delivered, we're ready to serve you the best Spanish tapas in Hamilton.</p>
+            <p class="text-xl mb-8 max-w-3xl mx-auto text-black">Whether you're dining in, taking out, or having it delivered, we're ready to serve you the best Spanish tapas in Hamilton.</p>
             <div class="flex flex-col md:flex-row justify-center gap-4">
-                <a href="{{ route('menu.index') }}" class="order-now">Order Online</a>
+                <a href="{{ route('menu.index') }}" class="order-now justify-center">Order Online</a>
                 <a href="tel:+15551234567" class="btn-secondary">Call for Reservations</a>
             </div>
         </div>
