@@ -583,8 +583,8 @@
             <div class="flex flex-col md:flex-row justify-between items-center">
                 <p class="text-gray-400">&copy; {{ date('Y') }} The District Tapas + Bar. All rights reserved.</p>
                 <div class="mt-4 md:mt-0 flex space-x-4 text-gray-400">
-                    <a href="#" class="hover:text-primary transition-colors duration-300">Privacy Policy</a>
-                    <a href="#" class="hover:text-primary transition-colors duration-300">Terms of Service</a>
+                    <a href="{{ route('privacy') }}" class="hover:text-primary transition-colors duration-300">Privacy Policy</a>
+                    <a href="{{ route('terms') }}" class="hover:text-primary transition-colors duration-300">Terms & Conditions</a>
                 </div>
             </div>
         </div>

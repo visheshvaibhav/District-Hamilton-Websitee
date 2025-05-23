@@ -102,3 +102,12 @@ Route::post('/contact/submit', [ContactController::class, 'submit'])->name('cont
 // Events routes
 Route::get('/events', [EventsController::class, 'index'])->name('events');
 Route::post('/events/inquiry', [EventsController::class, 'inquiry'])->name('events.inquiry');
+
+// Legal routes
+Route::get('/terms', function () {
+    return view('terms');
+})->name('terms');
+
+Route::get('/privacy', function () {
+    return view('privacy');
+})->name('privacy');
