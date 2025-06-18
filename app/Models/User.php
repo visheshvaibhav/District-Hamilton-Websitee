@@ -47,4 +47,13 @@ class User extends Authenticatable
             'is_admin' => 'boolean',
         ];
     }
+
+    public function canAccessFilament(): bool
+{
+    \Log::info('canAccessFilament check ran', ['user_id' => $this->id, 'is_admin' => $this->is_admin]);
+    return (bool) $this->is_admin;
 }
+
+
+}
+

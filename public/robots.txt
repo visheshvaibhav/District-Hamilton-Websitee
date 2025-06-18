@@ -1,2 +1,18 @@
 User-agent: *
-Disallow:
+Allow: /
+Allow: /menu
+Allow: /about
+Allow: /contact
+Allow: /events
+Allow: /terms
+Allow: /privacy
+
+Disallow: /cart
+Disallow: /checkout
+Disallow: /profile
+Disallow: /admin
+Disallow: /login
+Disallow: /register
+Disallow: /password
+
+Sitemap: https://districttapasham.com/sitemap.xml

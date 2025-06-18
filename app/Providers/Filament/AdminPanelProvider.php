@@ -17,6 +17,7 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use App\Http\Middleware\EnsureUserIsAdmin;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -59,9 +60,10 @@ class AdminPanelProvider extends PanelProvider
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
             ])
-            ->authMiddleware([
-                Authenticate::class,
-            ])
+            // ->authMiddleware([
+            //     Authenticate::class,
+            //     \App\Http\Middleware\AdminAccessMiddleware::class,
+            // ])
             ->navigationGroups([
                 'Menu Management',
                 'Order Management',
@@ -69,5 +71,6 @@ class AdminPanelProvider extends PanelProvider
                 'Settings',
             ])
             ->databaseNotifications();
+            
     }
 }
