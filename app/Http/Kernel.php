@@ -37,6 +37,10 @@ class Kernel extends HttpKernel
             \App\Http\Middleware\VerifyCsrfToken::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
             \App\Http\Middleware\SeoMiddleware::class,
+<<<<<<< HEAD
+=======
+
+>>>>>>> c7ba6d7934d22d5740e2276287a3c426467fdb82
         ],
 
         'api' => [
@@ -64,7 +68,11 @@ class Kernel extends HttpKernel
         'signed' => \App\Http\Middleware\ValidateSignature::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
+<<<<<<< HEAD
         'admin.guard' => \App\Http\Middleware\EnsureUserIsAdmin::class,
+=======
+        'admin.access' => \App\Http\Middleware\AdminAccessMiddleware::class,
+>>>>>>> c7ba6d7934d22d5740e2276287a3c426467fdb82
     ];
 
     /**
@@ -85,6 +93,9 @@ class Kernel extends HttpKernel
         'signed' => \App\Http\Middleware\ValidateSignature::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
+<<<<<<< HEAD
         'admin.access' => \App\Http\Middleware\AdminAccessMiddleware::class,
+=======
+>>>>>>> c7ba6d7934d22d5740e2276287a3c426467fdb82
     ];
 } 
