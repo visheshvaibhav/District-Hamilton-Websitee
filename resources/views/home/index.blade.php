@@ -14,6 +14,160 @@
             </div>
         </div>
     </section>
+
+    <!-- Daily Offers Section -->
+    <section class="py-16 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="section-title mx-auto">Daily Offers</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto mt-4">Discover our exclusive weekday specials designed to enhance your dining experience.</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                <!-- Tuesday Offer -->
+                <div class="offer-card" data-day="tuesday">
+                    <div class="card-inner">
+                        <div class="card-face card-front bg-gradient-to-br from-[#FF416C] to-[#FF4B2B] rounded-lg shadow-lg">
+                            <div class="p-8 text-center">
+                                <h3 class="text-2xl font-display font-bold text-white mb-3">Terrific Tuesday</h3>
+                                <p class="text-white/90">Triple the taste, double the value</p>
+                            </div>
+                        </div>
+                        <div class="card-face card-back bg-white rounded-lg shadow-lg">
+                            <div class="p-8 text-center">
+                                <h3 class="text-2xl font-display font-bold text-gray-900 mb-3">3 Tapas for 2</h3>
+                                <p class="text-gray-600 mb-6">Choose any three tapas from our signature menu and only pay for two.</p>
+                                <a href="{{ route('menu.index') }}" class="btn-primary inline-block">View Menu</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Wednesday Offer -->
+                <div class="offer-card" data-day="wednesday">
+                    <div class="card-inner">
+                        <div class="card-face card-front bg-gradient-to-br from-[#8E2DE2] to-[#4A00E0] rounded-lg shadow-lg">
+                            <div class="p-8 text-center">
+                                <h3 class="text-2xl font-display font-bold text-white mb-3">Wine Wednesday</h3>
+                                <p class="text-white/90">Uncork the savings</p>
+                            </div>
+                        </div>
+                        <div class="card-face card-back bg-white rounded-lg shadow-lg">
+                            <div class="p-8 text-center">
+                                <h3 class="text-2xl font-display font-bold text-gray-900 mb-3">50% Off Wines</h3>
+                                <p class="text-gray-600 mb-6">Enjoy half-price bottles from our curated wine selection.</p>
+                                <a href="{{ route('menu.index') }}#wines" class="btn-primary inline-block">View Wines</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Thursday Offer -->
+                <div class="offer-card" data-day="thursday">
+                    <div class="card-inner">
+                        <div class="card-face card-front bg-gradient-to-br from-[#1CB5E0] to-[#000851] rounded-lg shadow-lg">
+                            <div class="p-8 text-center">
+                                <h3 class="text-2xl font-display font-bold text-white mb-3">Tapas Thursday</h3>
+                                <p class="text-white/90">A feast for the senses</p>
+                            </div>
+                        </div>
+                        <div class="card-face card-back bg-white rounded-lg shadow-lg">
+                            <div class="p-8 text-center">
+                                <h3 class="text-2xl font-display font-bold text-gray-900 mb-3">5 Tapas for $50</h3>
+                                <p class="text-gray-600 mb-6">Create your perfect tapas combination with any five dishes.</p>
+                                <a href="{{ route('menu.index') }}" class="btn-primary inline-block">View Menu</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <style>
+            .offer-card {
+                height: 300px;
+                perspective: 2000px;
+                cursor: pointer;
+            }
+
+            .card-inner {
+                position: relative;
+                width: 100%;
+                height: 100%;
+                transform-style: preserve-3d;
+                transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+
+            .offer-card:hover .card-inner {
+                transform: rotateY(180deg);
+            }
+
+            .card-face {
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                backface-visibility: hidden;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .card-back {
+                transform: rotateY(180deg);
+            }
+
+            /* Mobile touch interaction */
+            @media (max-width: 768px) {
+                .offer-card.touched .card-inner {
+                    transform: rotateY(180deg);
+                }
+            }
+        </style>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                // Handle touch interactions for mobile devices
+                const offerCards = document.querySelectorAll('.offer-card');
+                let touchStartTime;
+                let touchTimeout;
+
+                offerCards.forEach(card => {
+                    card.addEventListener('touchstart', () => {
+                        touchStartTime = Date.now();
+                        touchTimeout = setTimeout(() => {
+                            card.classList.add('touched');
+                        }, 100);
+                    });
+
+                    card.addEventListener('touchend', () => {
+                        if (Date.now() - touchStartTime < 100) {
+                            clearTimeout(touchTimeout);
+                        }
+                    });
+
+                    // Reset card state when another card is touched
+                    card.addEventListener('touchstart', () => {
+                        offerCards.forEach(otherCard => {
+                            if (otherCard !== card) {
+                                otherCard.classList.remove('touched');
+                            }
+                        });
+                    });
+                });
+
+                // Highlight current day's offer
+                const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+                const today = days[new Date().getDay()];
+                const todayCard = document.querySelector(`.offer-card[data-day="${today}"]`);
+                
+                if (todayCard) {
+                    todayCard.classList.add('today');
+                    todayCard.style.transform = 'scale(1.02)';
+                    todayCard.style.boxShadow = '0 20px 40px rgba(0, 0, 0, 0.3)';
+                }
+            });
+        </script>
+    </section>
     
     <!-- About Section Brief -->
     <section class="py-16 bg-white">

@@ -11,6 +11,7 @@ use App\Http\Controllers\GiftCardController;
 use App\Models\Order;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\EventsController;
+use Illuminate\Support\Facades\Log;
 
 /*
 |--------------------------------------------------------------------------
@@ -111,3 +112,14 @@ Route::get('/terms', function () {
 Route::get('/privacy', function () {
     return view('privacy');
 })->name('privacy');
+
+// Daily Offers route
+Route::get('/daily-offers', function () {
+    return view('daily-offers');
+})->name('daily-offers');
+
+// Test route for logging
+Route::get('/test-log', function () {
+    Log::info('Test log entry');
+    return 'Logged a test message';
+})->middleware(['web']);

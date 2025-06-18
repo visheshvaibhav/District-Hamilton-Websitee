@@ -455,6 +455,9 @@
                 <a href="{{ route('menu.index') }}" class="hover:text-primary transition">
                     <i class="fas fa-utensils mr-1"></i> Menu
                 </a>
+                <a href="{{ route('daily-offers') }}" class="hover:text-primary transition">
+                    <i class="fas fa-tag mr-1"></i> Daily Offers
+                </a>
                 <a href="{{ route('events') }}" class="hover:text-primary transition">
                     <i class="fas fa-glass-cheers mr-1"></i> Events
                 </a>
@@ -503,6 +506,9 @@
             </a>
             <a href="{{ route('menu.index') }}" class="flex items-center justify-center">
                 <i class="fas fa-utensils mr-2"></i> Menu
+            </a>
+            <a href="{{ route('daily-offers') }}" class="flex items-center justify-center">
+                <i class="fas fa-tag mr-2"></i> Daily Offers
             </a>
             <a href="{{ route('events') }}" class="flex items-center justify-center">
                 <i class="fas fa-glass-cheers mr-2"></i> Events
